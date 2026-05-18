@@ -1,36 +1,5 @@
-<!doctype html>
-<html lang="pt-br">
-
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Livro de Ocorrência</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
-    crossorigin="anonymous">
-  <style>
-    body {
-      background-color: #f0f4f8;
-    }
-
-    .section-card {
-      background: #fff;
-    }
-
-    .form-check-label {
-      cursor: pointer;
-    }
-
-    #relatorio {
-      white-space: pre-wrap;
-      font-family: monospace;
-      font-size: 0.92rem;
-      min-height: 60px;
-    }
-  </style>
-</head>
-
 <body>
-  <h1 class="text-center fw-bold fs-1 py-4">📓 Registro de Ocorrências</h1>
+  <h1 class="text-center fw-bold fs-1 py-4">📓 Livro de Ocorrência</h1>
 
   <div class="content">
 
@@ -67,8 +36,6 @@
         <p class="text-muted mb-2">Marque as chaves que estão <strong>faltando</strong> no quadro:</p>
         <div class="row row-cols-2 row-cols-md-3 g-2" id="chaves-lista"></div>
       </div>
-      <label for="obsChaves" class="form-label fw-semibold">Detalhes do problema:</label>
-      <textarea class="form-control" id="obsChaves" rows="3" placeholder="Descreva o problema encontrado..."></textarea>
     </div>
 
     <!-- ═══════════════ CÂMERAS ═══════════════ -->
@@ -80,7 +47,7 @@
       </div>
       <div id="selectCameras" class="mb-3 d-none">
         <label for="numCameras" class="form-label">Selecione o problema:</label>
-        <select class="form-select mb-3" id="numCameras">
+        <select class="form-select" id="numCameras">
           <option value="" selected disabled>Escolha uma opção</option>
           <option value="1">1 câmera inoperante</option>
           <option value="2">2 câmeras inoperantes</option>
@@ -90,9 +57,6 @@
           <option value="varias">Mais de 5 câmeras inoperantes</option>
           <option value="all">Todas as câmeras inoperantes</option>
         </select>
-        <label for="obsCameras" class="form-label fw-semibold">Detalhes do problema:</label>
-        <textarea class="form-control" id="obsCameras" rows="3"
-          placeholder="Descreva o problema encontrado..."></textarea>
       </div>
     </div>
 
@@ -176,16 +140,16 @@
       'Hidrômetro Bloco 1', 'Hidrômetro Bloco 2', 'Hidrômetro Bloco 3', 'Hidrômetro Bloco 4', 'Hidrômetro Bloco 5',
       'Piscina',
       'Área Técnica Bloco 1', 'Área Técnica Bloco 2', 'Área Técnica Bloco 3', 'Área Técnica Bloco 4', 'Área Técnica Bloco 5',
-      'Telhado Bloco 1', 'Telhado Bloco 2', 'Telhado Bloco 3', 'Telhado Bloco 4', 'Telhado Bloco 5', 'Outra'
+      'Telhado Bloco 1', 'Telhado Bloco 2', 'Telhado Bloco 3', 'Telhado Bloco 4', 'Telhado Bloco 5'
     ];
     const SISTEMAS = [
       'MIP', 'INCONTROL', 'WINKER', 'Monitor das Câmeras', 'Notebook', 'Interfone',
       'Controle de abertura das cancelas',
       'Controle de abertura do portão de correr',
-      'Controle de abertura do portão de pedestres', 'Outros'
+      'Controle de abertura do portão de pedestres'
     ];
     const GUARITA_ITENS = [
-      'Iluminação', 'Limpeza do piso', 'Organização da bancada', 'Limpeza dos vidros', 'Lixeira', 'Organização Encomendas', 'Limpeza das Telas', 'Limpeza Banheiro', 'Outro'
+      'Iluminação', 'Limpeza do piso', 'Organização da bancada', 'Limpeza dos vidros', 'Lixeira'
     ];
 
     // ── RENDER CHECKBOXES ──────────────────────
@@ -215,6 +179,14 @@
         hora: `${pad(now.getHours())}:${pad(now.getMinutes())}`
       };
     }
+    function preencherDataHora() {
+      const { data, hora } = dataHoraAgora();
+      const cd = document.getElementById('dataAtual');
+      const ch = document.getElementById('horaAtual');
+      if (!cd.value) cd.value = data;
+      if (!ch.value) ch.value = hora;
+    }
+
     // ── TOGGLES ────────────────────────────────
     function bindToggle(checkId, detalheId) {
       const chk = document.getElementById(checkId);
@@ -277,8 +249,6 @@
         } else {
           faltando.forEach(ch => {
             push(`  ❌ Chave "${ch}" não está no quadro.`, `  ❌ Chave _${ch}_ não está no quadro.`);
-            const obsChaves = document.getElementById('obsChaves').value.trim();
-            if (obsChaves) push(`  📝 Obs: ${obsChaves}`, `  📝 _Obs: ${obsChaves}_`)
           });
         }
       }
@@ -296,8 +266,6 @@
         else if (val) msg = `⚠️ ${val} câmera(s) inoperante(s).`;
         else msg = '⚠️ Problema nas câmeras (sem detalhes).';
         push(`  ${msg}`);
-        const obsCam = document.getElementById('obsCameras').value.trim();
-        if (obsCam) push(`  📝 Obs: ${obsCam}`, `  📝 _Obs: ${obsCam}_`);
       }
       push(sep);
 
@@ -368,12 +336,12 @@
     function salvarEstado() {
       localStorage.setItem('livroOcorrencia', JSON.stringify({
         operador: document.getElementById('nomeOperador').value,
+        dataField: document.getElementById('dataAtual').value,
+        horaField: document.getElementById('horaAtual').value,
         checkTodasChaves: document.getElementById('checkTodasChaves').checked,
         chavesFaltando: getCheckedLabels('chave'),
-        obsChaves: document.getElementById('obsChaves').value,
         checkCameras: document.getElementById('checkCameras').checked,
         numCameras: document.getElementById('numCameras').value,
-        obsCameras: document.getElementById('obsCameras').value,
         checkSistemas: document.getElementById('checkSistemas').checked,
         obsSistemas: document.getElementById('obsSistemas').value,
         sistemasMarcados: getCheckedLabels('sistema'),
@@ -397,20 +365,20 @@
       try {
         const e = JSON.parse(raw);
         if (e.operador) document.getElementById('nomeOperador').value = e.operador;
+        if (e.dataField) document.getElementById('dataAtual').value = e.dataField;
+        if (e.horaField) document.getElementById('horaAtual').value = e.horaField;
 
         // Chaves
         const ctc = bool(e.checkTodasChaves);
         document.getElementById('checkTodasChaves').checked = ctc;
         document.getElementById('detalheChaves').classList.toggle('d-none', ctc);
         marcarPorLabel('chave', e.chavesFaltando || []);
-        document.getElementById('obsChaves').value = e.obsChaves || '';
 
         // Câmeras
         const cc = bool(e.checkCameras);
         document.getElementById('checkCameras').checked = cc;
         document.getElementById('selectCameras').classList.toggle('d-none', cc);
         if (e.numCameras) document.getElementById('numCameras').value = e.numCameras;
-        document.getElementById('obsCameras').value = e.obsCameras || '';
 
         // Sistemas
         const cs = bool(e.checkSistemas);
@@ -461,11 +429,10 @@
     // ── INIT ───────────────────────────────────
     window.addEventListener('load', () => {
       restaurarEstado();
+      preencherDataHora();
     });
   </script>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
     crossorigin="anonymous"></script>
 </body>
-
-</html>
